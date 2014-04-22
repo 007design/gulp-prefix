@@ -18,7 +18,8 @@
   "author": "007design (https://github.com/007design)",
   "dependencies": {},
   "devDependencies": {
-    "through2": "~0.4.1"
+    "through2": "~0.4.1",
+    "html-prefixer": "~0.1.0"
   },
   "engines": {
     "node": ">=0.10"
