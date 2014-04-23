@@ -5,6 +5,9 @@ A gulp plugin inspired by [html-prefixer](https://github.com/tivac/node-html-pre
 
 Will prefix relative urls in &lt;link&gt;, &lt;script&gt; and &lt;img&gt; tags
 
+_Disclaimer:_
+This plugin uses trumpet which takes in a stream of files. Gulp plugins take a stream of vinyl file objects. To interface the two I use `fs.createReadStream(file.path)`  I'm not sure if there's a better way to do this
+
 ###HTML
 ```html
 <html>
