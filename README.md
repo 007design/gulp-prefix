@@ -1,7 +1,7 @@
 gulp-prefix
 =========
 
-A gulp plugin for html-prefixer.
+A gulp plugin inspired by html-prefixer.
 
 ```
 var gulp = require('gulp'),
