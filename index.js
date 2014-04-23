@@ -28,9 +28,11 @@ module.exports = function(options) {
   return through.obj(function(file, enc, cb) {
     var tr = trumpet();
 
-    tr.selectAll("script[src]", _prefixer(options, "src"));
-    tr.selectAll("link[href]",  _prefixer(options, "href"));
-    tr.selectAll("img[src]",    _prefixer(options, "src"));
+    tr.selectAll("script[src]", 			_prefixer(options, "src"));
+    tr.selectAll("link[href]",  			_prefixer(options, "href"));
+    tr.selectAll("img[src]",    			_prefixer(options, "src"));
+    tr.selectAll("input[src]",    		_prefixer(options, "src"));
+    tr.selectAll("img[data-ng-src]",	_prefixer(options, "data-ng-src"));
 
     var stream = fs.createReadStream(file.path);
     
