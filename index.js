@@ -6,7 +6,7 @@ var through = require('through2'),
     concat  = require("concat-stream"),
     _prefixer;
 
-_prefixer = function(options, attr) {
+_prefixer = function(prefix, attr) {
     return function(node) {
         node.getAttribute(attr, function(uri) {
             var output;
@@ -18,34 +18,43 @@ _prefixer = function(options, attr) {
                 return;
             }
 
-            node.setAttribute(attr, url.resolve(options.prefix, uri.path));
+            node.setAttribute(attr, url.resolve(prefix, uri.path));
         });
     };
 };
 
-module.exports = function(options) {
+module.exports = function(prefix, selectors) {
   
   return through.obj(function(file, enc, cb) {
-    var tr = trumpet();
 
-    tr.selectAll("script[src]", 			_prefixer(options, "src"));
-    tr.selectAll("link[href]",  			_prefixer(options, "href"));
-    tr.selectAll("img[src]",    			_prefixer(options, "src"));
-    tr.selectAll("input[src]",    		_prefixer(options, "src"));
-    tr.selectAll("img[data-ng-src]",	_prefixer(options, "data-ng-src"));
-
-    var stream = fs.createReadStream(file.path);
+    if (!selectors) {
+		  selectors = [
+		    { match: "script[src]", attr: "src" },
+		    { match: "link[href]", attr: "href"},
+		    { match: "img[src]", attr: "src"},
+		    { match: "input[src]", attr: "src"},
+		    { match: "img[data-ng-src]", attr: "data-ng-src"}
+		  ];
+    }
     
-    // No prefix
-    if(!options.prefix)
-        cb(null, file);
-    
-    tr.pipe(concat(function concatDone(data) {
-      file.contents = data;
-      stream.close();
+    if(!prefix)
       cb(null, file);
-    }));
 
-    stream.pipe(tr);    
+    else {
+    	var tr = trumpet();
+    	
+    	for (var a in selectors)
+		    tr.selectAll(selectors[a].match, _prefixer(prefix, selectors[a].attr))
+
+	    var stream = fs.createReadStream(file.path);
+	    
+	    tr.pipe(concat(function concatDone(data) {
+	      file.contents = data;
+	      stream.close();
+	      cb(null, file);
+	    }));
+
+	    stream.pipe(tr);   
+    } 
   });
 };
