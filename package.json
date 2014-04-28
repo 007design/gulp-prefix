@@ -20,17 +20,11 @@
     "through2": "~0.4.1",
     "url": "~0.10.1",
     "trumpet": "~1.6.3",
-    "concat-stream": "~1.4.5"
-  },
-  "dependencies": {
-    "through2": "~0.4.1",
-    "url": "~0.10.1",
-    "trumpet": "~1.6.3",
     "concat-stream": "~1.4.5",
     "url-join": "0.0.1"
   },
   "devDependencies": {
-    
+
   },
   "engines": {
     "node": ">=0.10"
