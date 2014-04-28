@@ -68,6 +68,9 @@ gulp.task('prefix', function(){
 </html>
 ```
 
+To run tests install jasmine-node globally `npm install jasmine-node -g` and run `jasmine-node spec`
+
+
 License
 ----
 
