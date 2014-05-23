@@ -45,10 +45,10 @@ var gulp = require('gulp'),
     prefix = require('gulp-prefix');
 
 gulp.task('prefix', function(){
-  var prefix = "http://mydomain.com/assets";
+  var prefixUrl = "http://mydomain.com/assets";
 
   gulp.src('index.html')
-    .pipe(prefix( prefix ))
+    .pipe(prefix(prefixUrl))
     .pipe(gulp.dest('build'));
 });
 ```
