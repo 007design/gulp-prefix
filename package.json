@@ -1,6 +1,6 @@
 {
   "name": "gulp-prefix",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Implementation of html-prefixer for gulp",
   "main": "index.js",
   "homepage": "https://github.com/007design/gulp-prefix",
@@ -19,7 +19,7 @@
   "dependencies": {
     "through2": "~0.4.1",
     "url": "~0.10.1",
-    "trumpet": "~1.6.3",
+    "trumpet": "1.6.3",
     "concat-stream": "~1.4.5",
     "url-join": "0.0.1"
   },
