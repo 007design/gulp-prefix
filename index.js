@@ -16,6 +16,10 @@ _prefixer = function(prefix, attr) {
 
       if(uri.host || !uri.path)
         return;
+      
+      if (!/^[!#$&-;=?-\[\]_a-z~\.\/]+$/.test(uri.path)) {
+        return;
+      }
 
       node.setAttribute(attr, urljoin(prefix, uri.path));
     });
