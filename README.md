@@ -13,21 +13,17 @@ The default config looks like this:
   { match: "script[src]", attr: "src" },
   { match: "link[href]", attr: "href"},
   { match: "img[src]", attr: "src"},
-  { match: "input[src]", attr: "src"},
-  { match: "img[data-ng-src]", attr: "data-ng-src"}
+  { match: "input[src]", attr: "src"}
 ]
 ```
 
-
-_Disclaimer:_
-This plugin uses trumpet which takes in a stream of files. Gulp plugins take a stream of vinyl file objects. To interface the two I use `fs.createReadStream(file.path)`  I'm not sure if there's a better way to do this
 
 ###HTML
 ```html
 <html>
   <head>
     <link href="http://cdnjs.com/some-library.css">
-    <link href="css/stylesheets.js">
+    <link href="css/stylesheets.css">
   </head>
   <body>
     <img src="/images/myImage.jpg"/>
@@ -48,7 +44,7 @@ gulp.task('prefix', function(){
   var prefixUrl = "http://mydomain.com/assets";
 
   gulp.src('index.html')
-    .pipe(prefix(prefixUrl))
+    .pipe(prefix(prefixUrl, null, true))
     .pipe(gulp.dest('build'));
 });
 ```
@@ -58,7 +54,7 @@ gulp.task('prefix', function(){
 <html>
   <head>
     <link href="http://cdnjs.com/some-library.css">
-    <link href="http://mydomain.com/assets/css/stylesheets.js">
+    <link href="http://mydomain.com/assets/css/stylesheets.css">
   </head>
   <body>
     <img src="http://mydomain.com/assets/images/myImage.jpg"/>

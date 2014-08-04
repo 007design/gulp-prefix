@@ -6,27 +6,32 @@ describe("Functional Tests", function(){
   var input, output;
   var prefix = "http://mydomain.com/assets";
   var f;
+    
+  it("should replace the paths", function(){
+    input = new File({ 'contents': fs.readFileSync(__dirname + '/input1.html') });
+    output = fs.readFileSync(__dirname + '/output1.html').toString();
 
-  beforeEach(function(){
-    input = new File({ 'contents': fs.readFileSync(__dirname + '/input.html') });
-    output = fs.readFileSync(__dirname + '/output.html').toString();
-
-    var stream = prefixer(prefix, null, true);
+    var stream = prefixer(prefix);
     stream.on('data', function(newFile){
       f = newFile.contents.toString();      
     });
+    stream.write(input);
+    stream.end();
 
-    runs(function(){
-      stream.write(input);
-      stream.end();
-    });
-
-    waitsFor(function(){
-      return f;
-    });
+    expect(f).toBe(output);
   });
     
-  it("should replace the paths", function(){
+  it("should not care about white space", function(){
+    input = new File({ 'contents': fs.readFileSync(__dirname + '/input2.html') });
+    output = fs.readFileSync(__dirname + '/output2.html').toString();
+
+    var stream = prefixer(prefix);
+    stream.on('data', function(newFile){
+      f = newFile.contents.toString();      
+    });
+    stream.write(input);
+    stream.end();
+
     expect(f).toBe(output);
   });
 });

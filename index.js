@@ -13,16 +13,21 @@ module.exports = function(prefix, selectors, parseComments) {
       { match: "script[src]", attr: "src" },
       { match: "link[href]", attr: "href"},
       { match: "img[src]", attr: "src"},
-      { match: "input[src]", attr: "src"},
-      { match: "img[data-ng-src]", attr: "data-ng-src"}
+      { match: "input[src]", attr: "src"}
       ];
     }
     
+    var opts = {
+      normalizeWhitespace: false,
+      xmlMode: false,
+      decodeEntities: false
+    };
+
     if(!prefix)
       cb(null, file);
 
     else {
-      var $ = cheerio.load(file.contents.toString());
+      var $ = cheerio.load(file.contents.toString(), opts);
     	
     	for (var a in selectors) {
         $(selectors[a].match).each(function(){
@@ -33,20 +38,20 @@ module.exports = function(prefix, selectors, parseComments) {
         });
       }
 
-      if (parseComments){
-        $('*').contents().filter(function(){ return this.type == 'comment'; }).each(function(){
-          var $$ = cheerio.load(this.data);
-          for (var a in selectors) {
-            $$(selectors[a].match).each(function(){
-              var attrValue = this.attribs[selectors[a].attr];
-              var uri = url.parse(attrValue, false, true);
-              if (uri.host || !uri.path || !/^[!#$&-;=?-\[\]_a-z~\.\/]+$/.test(uri.path)) return;
-              this.attribs[selectors[a].attr] = urljoin(prefix, attrValue);
-            });
-          }
-          this.data = $$.html();
-        });
-      }
+      // if (parseComments){
+      //   $('*').contents().filter(function(){ return this.type == 'comment'; }).each(function(){
+      //     var $$ = cheerio.load(this.data, opts);
+      //     for (var a in selectors) {
+      //       $$(selectors[a].match).each(function(){
+      //         var attrValue = this.attribs[selectors[a].attr];
+      //         var uri = url.parse(attrValue, false, true);
+      //         if (uri.host || !uri.path || !/^[!#$&-;=?-\[\]_a-z~\.\/]+$/.test(uri.path)) return;
+      //         this.attribs[selectors[a].attr] = urljoin(prefix, attrValue);
+      //       });
+      //     }
+      //     this.data = $$.html();
+      //   });
+      // }
 
       file.contents = new Buffer($.html());
       cb(null, file);
