@@ -3,33 +3,11 @@ var through = require('through2'),
     fs = require('fs'),
     url = require("url"),
     urljoin = require("url-join"),
-    trumpet = require("trumpet"),
-    concat  = require("concat-stream"),
-    _prefixer;
+    cheerio = require("cheerio");
 
-_prefixer = function(prefix, attr) {
-  return function(node) {
-    node.getAttribute(attr, function(uri) {
-      var output;
-
-      uri = url.parse(uri, false, true);
-
-      if(uri.host || !uri.path)
-        return;
-      
-      if (!/^[!#$&-;=?-\[\]_a-z~\.\/]+$/.test(uri.path)) {
-        return;
-      }
-
-      node.setAttribute(attr, urljoin(prefix, uri.path));
-    });
-  };
-};
-
-module.exports = function(prefix, selectors) {
+module.exports = function(prefix, selectors, parseComments) {
 
   return through.obj(function(file, enc, cb) {
-
     if (!selectors) {
       selectors = [
       { match: "script[src]", attr: "src" },
@@ -44,20 +22,34 @@ module.exports = function(prefix, selectors) {
       cb(null, file);
 
     else {
-    	var tr = trumpet();
+      var $ = cheerio.load(file.contents.toString());
     	
-    	for (var a in selectors)
-        tr.selectAll(selectors[a].match, _prefixer(prefix, selectors[a].attr))
+    	for (var a in selectors) {
+        $(selectors[a].match).each(function(){
+          var attrValue = this.attribs[selectors[a].attr];
+          var uri = url.parse(attrValue, false, true);
+          if (uri.host || !uri.path || !/^[!#$&-;=?-\[\]_a-z~\.\/]+$/.test(uri.path)) return;
+          this.attribs[selectors[a].attr] = urljoin(prefix, attrValue);
+        });
+      }
 
-      var stream = fs.createReadStream(file.path);
+      if (parseComments){
+        $('*').contents().filter(function(){ return this.type == 'comment'; }).each(function(){
+          var $$ = cheerio.load(this.data);
+          for (var a in selectors) {
+            $$(selectors[a].match).each(function(){
+              var attrValue = this.attribs[selectors[a].attr];
+              var uri = url.parse(attrValue, false, true);
+              if (uri.host || !uri.path || !/^[!#$&-;=?-\[\]_a-z~\.\/]+$/.test(uri.path)) return;
+              this.attribs[selectors[a].attr] = urljoin(prefix, attrValue);
+            });
+          }
+          this.data = $$.html();
+        });
+      }
 
-      tr.pipe(concat(function concatDone(data) {
-        file.contents = data;
-        stream.close();
-        cb(null, file);
-      }));
-
-      stream.pipe(tr);   
+      file.contents = new Buffer($.html());
+      cb(null, file);
     } 
   });
 };
