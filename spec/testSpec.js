@@ -1,37 +1,45 @@
 var prefixer = require('../index.js');
-var File = require('vinyl');
 var fs = require('fs');
+var i = 1;
 
 describe("Functional Tests", function(){
   var input, output;
   var prefix = "http://mydomain.com/assets";
   var f;
-    
-  it("should replace the paths", function(){
-    input = new File({ 'contents': fs.readFileSync(__dirname + '/input1.html') });
-    output = fs.readFileSync(__dirname + '/output1.html').toString();
+
+  beforeEach(function(){
+    input = fs.createReadStream(__dirname + '/input'+i+'.html');
+    output = fs.readFileSync(__dirname + '/output'+i+'.html').toString();
 
     var stream = prefixer(prefix);
     stream.on('data', function(newFile){
-      f = newFile.contents.toString();      
+      f = newFile.contents.toString();
     });
-    stream.write(input);
-    stream.end();
 
+    runs(function(){
+      stream.write(input);
+      stream.end();
+    });
+
+    waitsFor(function(){
+      return f;
+    });
+  });
+
+  afterEach(function(){
+    i++;
+    f = null;
+  });
+    
+  it("should replace the paths", function(){
     expect(f).toBe(output);
   });
     
   it("should not care about white space", function(){
-    input = new File({ 'contents': fs.readFileSync(__dirname + '/input2.html') });
-    output = fs.readFileSync(__dirname + '/output2.html').toString();
-
-    var stream = prefixer(prefix);
-    stream.on('data', function(newFile){
-      f = newFile.contents.toString();      
-    });
-    stream.write(input);
-    stream.end();
-
+    expect(f).toBe(output);
+  });
+    
+  it("should ignore ruby", function(){
     expect(f).toBe(output);
   });
 });

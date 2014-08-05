@@ -3,58 +3,61 @@ var through = require('through2'),
     fs = require('fs'),
     url = require("url"),
     urljoin = require("url-join"),
-    cheerio = require("cheerio");
+    trumpet = require("trumpet"),
+    concat  = require("concat-stream"),
+    _prefixer;
 
-module.exports = function(prefix, selectors, parseComments) {
+_prefixer = function(prefix, attr) {
+  return function(node) {
+    node.getAttribute(attr, function(uri) {
+      var output;
+
+      uri = url.parse(uri, false, true);
+
+      if(uri.host || !uri.path)
+        return;
+      
+      if (!/^[!#$&-;=?-\[\]_a-z~\.\/]+$/.test(uri.path)) {
+        return;
+      }
+
+      node.setAttribute(attr, urljoin(prefix, uri.path));
+    });
+  };
+};
+
+module.exports = function(prefix, selectors) {
 
   return through.obj(function(file, enc, cb) {
+
     if (!selectors) {
       selectors = [
       { match: "script[src]", attr: "src" },
       { match: "link[href]", attr: "href"},
       { match: "img[src]", attr: "src"},
-      { match: "input[src]", attr: "src"}
+      { match: "input[src]", attr: "src"},
+      { match: "img[data-ng-src]", attr: "data-ng-src"}
       ];
     }
     
-    var opts = {
-      normalizeWhitespace: false,
-      xmlMode: false,
-      decodeEntities: false
-    };
-
     if(!prefix)
       cb(null, file);
 
     else {
-      var $ = cheerio.load(file.contents.toString(), opts);
-    	
-    	for (var a in selectors) {
-        $(selectors[a].match).each(function(){
-          var attrValue = this.attribs[selectors[a].attr];
-          var uri = url.parse(attrValue, false, true);
-          if (uri.host || !uri.path || !/^[!#$&-;=?-\[\]_a-z~\.\/]+$/.test(uri.path)) return;
-          this.attribs[selectors[a].attr] = urljoin(prefix, attrValue);
-        });
-      }
+      var tr = trumpet();
+      
+      for (var a in selectors)
+        tr.selectAll(selectors[a].match, _prefixer(prefix, selectors[a].attr))
 
-      // if (parseComments){
-      //   $('*').contents().filter(function(){ return this.type == 'comment'; }).each(function(){
-      //     var $$ = cheerio.load(this.data, opts);
-      //     for (var a in selectors) {
-      //       $$(selectors[a].match).each(function(){
-      //         var attrValue = this.attribs[selectors[a].attr];
-      //         var uri = url.parse(attrValue, false, true);
-      //         if (uri.host || !uri.path || !/^[!#$&-;=?-\[\]_a-z~\.\/]+$/.test(uri.path)) return;
-      //         this.attribs[selectors[a].attr] = urljoin(prefix, attrValue);
-      //       });
-      //     }
-      //     this.data = $$.html();
-      //   });
-      // }
+      var stream = fs.createReadStream(file.path);
 
-      file.contents = new Buffer($.html());
-      cb(null, file);
+      tr.pipe(concat(function concatDone(data) {
+        file.contents = data;
+        stream.close();
+        cb(null, file);
+      }));
+
+      stream.pipe(tr);   
     } 
   });
 };
