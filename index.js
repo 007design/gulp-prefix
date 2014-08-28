@@ -17,7 +17,7 @@ _prefixer = function(prefix, attr) {
       if(uri.host || !uri.path)
         return;
       
-      if (!/^[!#$&-;=?-\[\]_a-z~\.\/]+$/.test(uri.path)) {
+      if (!/^[!#$&-;=?-\[\]_a-z~\.\/\{\}]+$/.test(uri.path)) {
         return;
       }
 
