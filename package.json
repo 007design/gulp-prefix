@@ -6,7 +6,7 @@
   "homepage": "https://github.com/007design/gulp-prefix",
   "license": "MIT",
   "scripts": {
-    "test": "jasmine"
+    "test": "node_modules/jasmine-node/bin/jasmine-node spec"
   },
   "repository": {
     "type": "git",
@@ -25,13 +25,15 @@
   ],
   "author": "007design (https://github.com/007design)",
   "dependencies": {
-    "through2": "~0.4.1",
+    "through2": "~1.0.0",
     "url": "~0.10.1",
-    "trumpet": "1.6.4",
+    "trumpet": "~1.7.0",
     "concat-stream": "~1.4.5",
     "url-join": "0.0.1"
   },
   "devDependencies": {
+    "gulp": "^3.8.8",
+    "jasmine-node": "~1.14.5"
   },
   "engines": {
     "node": ">=0.10"
