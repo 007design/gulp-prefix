@@ -1,29 +1,26 @@
 var prefixer = require('../index.js');
 var fs = require('fs');
+var gulp = require('gulp');
 var i = 1;
 
 describe("Functional Tests", function(){
-  var input, output;
+  var output;
   var prefix = "http://mydomain.com/assets";
   var f;
 
+
   beforeEach(function(){
-    input = fs.createReadStream(__dirname + '/input'+i+'.html');
     output = fs.readFileSync(__dirname + '/output'+i+'.html').toString();
 
-    var stream = prefixer(prefix);
-    stream.on('data', function(newFile){
-      f = newFile.contents.toString();
-    });
-
-    runs(function(){
-      stream.write(input);
-      stream.end();
-    });
+    gulp.src(__dirname + '/input'+i+'.html')
+      .pipe(prefixer(prefix))
+      .on('data', function(file){
+        f = file.contents.toString();       
+      });
 
     waitsFor(function(){
       return f;
-    });
+    }, 'f to equal something', 1000000);
   });
 
   afterEach(function(){
