@@ -21,7 +21,9 @@ _prefixer = function(prefix, attr) {
         return;
       }
 
-      node.setAttribute(attr, urljoin(prefix, uri.path));
+      var file_prefix = (typeof prefix === 'function') ? prefix(uri) : prefix;
+
+      node.setAttribute(attr, urljoin(file_prefix, uri.path));
     });
   };
 };
