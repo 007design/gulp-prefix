@@ -1,5 +1,6 @@
 gulp-prefix
 =========
+[![Build Status](https://travis-ci.org/007design/gulp-prefix.svg?branch=master)](https://travis-ci.org/007design/gulp-prefix)
 
 A gulp plugin inspired by [html-prefixer](https://github.com/tivac/node-html-prefixer).
 
