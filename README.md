@@ -45,7 +45,7 @@ gulp.task('prefix', function(){
   var prefixUrl = "http://mydomain.com/assets";
 
   gulp.src('index.html')
-    .pipe(prefix(prefixUrl, null, true))
+    .pipe(prefix(prefixUrl))
     .pipe(gulp.dest('build'));
 });
 ```
