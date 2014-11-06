@@ -54,6 +54,7 @@ module.exports = function(prefix, selectors) {
       var stream = fs.createReadStream(file.path);
 
       tr.pipe(concat(function concatDone(data) {
+        if (Array.isArray(data) && data.length === 0) data = null;
         file.contents = data;
         stream.close();
         cb(null, file);
