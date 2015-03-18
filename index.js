@@ -7,7 +7,7 @@ var through = require('through2'),
     concat  = require("concat-stream"),
     _prefixer;
 
-_prefixer = function(prefix, attr) {
+_prefixer = function(prefix, attr, invalid) {
   return function(node) {
     node.getAttribute(attr, function(uri) {
       var output;
@@ -21,6 +21,10 @@ _prefixer = function(prefix, attr) {
         return;
       }
 
+      if (invalid && new RegExp(invalid).test(uri.path)){
+        return;
+      }
+
       var file_prefix = (typeof prefix === 'function') ? prefix(uri) : prefix;
 
       node.setAttribute(attr, urljoin(file_prefix, uri.path));
@@ -28,7 +32,7 @@ _prefixer = function(prefix, attr) {
   };
 };
 
-module.exports = function(prefix, selectors) {
+module.exports = function(prefix, selectors, ignore) {
 
   return through.obj(function(file, enc, cb) {
 
@@ -49,7 +53,7 @@ module.exports = function(prefix, selectors) {
       var tr = trumpet();
       
       for (var a in selectors)
-        tr.selectAll(selectors[a].match, _prefixer(prefix, selectors[a].attr))
+        tr.selectAll(selectors[a].match, _prefixer(prefix, selectors[a].attr, ignore))
 
       var stream = fs.createReadStream(file.path);
 

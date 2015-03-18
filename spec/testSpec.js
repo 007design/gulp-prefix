@@ -7,13 +7,13 @@ describe("Functional Tests", function(){
   var output;
   var prefix = "http://mydomain.com/assets";
   var f;
-
+  var ignore = '{{';
 
   beforeEach(function(){
     output = fs.readFileSync(__dirname + '/output'+i+'.html').toString();
 
     gulp.src(__dirname + '/input'+i+'.html')
-      .pipe(prefixer(prefix))
+      .pipe(prefixer(prefix, '', ignore))
       .on('data', function(file){
         f = file.contents.toString();       
       });
@@ -37,6 +37,10 @@ describe("Functional Tests", function(){
   });
     
   it("should ignore ruby", function(){
+    expect(f).toBe(output);
+  });
+
+  it("should ignore paths with invalid characters", function(){
     expect(f).toBe(output);
   });
 });

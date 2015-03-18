@@ -19,6 +19,9 @@ The default config looks like this:
 ```
 
 
+If you have tags which you do not want to prefix, you can pass a third argument containing a regular expression string which, if matched against the attribute, will ignore the tag.  
+
+
 ###HTML
 ```html
 <html>
@@ -30,6 +33,7 @@ The default config looks like this:
     <img src="/images/myImage.jpg"/>
     <script src="//cdnjs.com/some-library.js"></script>
     <script src="js/scripts.js"></script>
+    <script src="{{ignore_me_i_am_mustache}}"></script>
   </body>
 </html>
 ```
@@ -45,7 +49,7 @@ gulp.task('prefix', function(){
   var prefixUrl = "http://mydomain.com/assets";
 
   gulp.src('index.html')
-    .pipe(prefix(prefixUrl, null, true))
+    .pipe(prefix(prefixUrl, null, '{{'))
     .pipe(gulp.dest('build'));
 });
 ```
@@ -61,6 +65,7 @@ gulp.task('prefix', function(){
     <img src="http://mydomain.com/assets/images/myImage.jpg"/>
     <script src="//cdnjs.com/some-library.js"></script>
     <script src="http://mydomain.com/assets/js/scripts.js"></script>
+    <script src="{{ignore_me_i_am_mustache}}"></script>
   </body>
 </html>
 ```
