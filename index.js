@@ -10,7 +10,6 @@ var through = require('through2'),
 _prefixer = function(prefix, attr, invalid) {
   return function(node) {
     node.getAttribute(attr, function(uri) {
-      var output;
 
       uri = url.parse(uri, false, true);
 
