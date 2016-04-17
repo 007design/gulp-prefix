@@ -1,6 +1,5 @@
 'use strict';
 var through = require('through2'),
-    fs = require('fs'),
     url = require("url"),
     urljoin = require("url-join"),
     trumpet = require("trumpet"),
@@ -10,7 +9,6 @@ var through = require('through2'),
 _prefixer = function(prefix, attr, invalid) {
   return function(node) {
     node.getAttribute(attr, function(uri) {
-      var output;
 
       uri = url.parse(uri, false, true);
 
@@ -55,16 +53,13 @@ module.exports = function(prefix, selectors, ignore) {
       for (var a in selectors)
         tr.selectAll(selectors[a].match, _prefixer(prefix, selectors[a].attr, ignore))
 
-      var stream = fs.createReadStream(file.path);
-
-      tr.pipe(concat(function concatDone(data) {
+      tr.pipe(concat(function (data) {
         if (Array.isArray(data) && data.length === 0) data = null;
         file.contents = data;
-        stream.close();
         cb(null, file);
       }));
 
-      stream.pipe(tr);   
+      file.pipe(tr);
     } 
   });
 };
